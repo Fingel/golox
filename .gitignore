@@ -13,3 +13,10 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Sublime text project files
+*.sublime-project
+*.sublime-workspace
+
+# Binaries
+bin/
