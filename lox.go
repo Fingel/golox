@@ -1,4 +1,4 @@
-package lox
+package main
 
 import (
 	"bufio"
@@ -62,4 +62,9 @@ func (lox Lox) Error(line int, message string) {
 func (lox *Lox) report(line int, where string, message string) {
 	fmt.Println("[line " + string(line) + "] Error" + where + ": " + message)
 	lox.hadError = true
+}
+
+func main() {
+	lox := new(Lox)
+	lox.Main()
 }
