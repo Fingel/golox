@@ -1,4 +1,4 @@
-package lox 
+package lox
 
 import (
 	"fmt"
@@ -14,22 +14,22 @@ type Scanner struct {
 }
 
 var keywords = map[string]TokenType{
-	"and": AND,
-	"class": CLASS,
-	"else": ELSE,
-	"false": FALSE,
-	"for": FOR,
-	"fun": FUN,
-	"if": IF,
-	"nil": NIL,
-	"or": OR,
-	"print": PRINT,
+	"and":    AND,
+	"class":  CLASS,
+	"else":   ELSE,
+	"false":  FALSE,
+	"for":    FOR,
+	"fun":    FUN,
+	"if":     IF,
+	"nil":    NIL,
+	"or":     OR,
+	"print":  PRINT,
 	"return": RETURN,
-	"super": SUPER,
-	"this": THIS,
-	"true": TRUE,
-	"var": VAR,
-	"while": WHILE,
+	"super":  SUPER,
+	"this":   THIS,
+	"true":   TRUE,
+	"var":    VAR,
+	"while":  WHILE,
 }
 
 func NewScanner(source string) Scanner {
@@ -147,9 +147,9 @@ func (s *Scanner) identifier() {
 	for s.isAlphaNumberic(s.peek()) {
 		s.advance()
 	}
-	text := s.Source[s.start : s.current]
+	text := s.Source[s.start:s.current]
 	typeOf, ok := keywords[text]
-	if ok == false{
+	if ok == false {
 		typeOf = INDENTIFIER
 	}
 	s.addToken(typeOf, nil)
