@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"github.com/Fingel/golox/lox"
 )
 
 func check(e error) {
@@ -17,28 +19,28 @@ type Lox struct {
 	hadError bool
 }
 
-func (lox *Lox) Main() {
+func (l *Lox) Main() {
 	if len(os.Args) > 2 {
 		fmt.Println("Usage: glox [script]")
 		os.Exit(64)
 	} else if len(os.Args) == 2 {
-		lox.runFile(os.Args[1])
+		l.runFile(os.Args[1])
 	} else {
-		lox.runPrompt()
+		l.runPrompt()
 	}
 }
 
-func (lox *Lox) runFile(path string) {
+func (l *Lox) runFile(path string) {
 	fmt.Println(path)
 	dat, err := ioutil.ReadFile(path)
 	check(err)
-	lox.run(string(dat))
-	if lox.hadError {
+	l.run(string(dat))
+	if l.hadError {
 		os.Exit(65)
 	}
 }
 
-func (lox *Lox) runPrompt() {
+func (l *Lox) runPrompt() {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print("> ")
@@ -46,22 +48,26 @@ func (lox *Lox) runPrompt() {
 		if err != nil {
 			break
 		}
-		lox.run(text)
-		lox.hadError = false
+		l.run(text)
+		l.hadError = false
 	}
 }
 
-func (lox *Lox) run(source string) {
-	fmt.Print(source)
+func (l *Lox) run(source string) {
+	scanner := lox.NewScanner(source)
+	tokens := scanner.ScanTokens()
+	for _, token := range tokens {
+		fmt.Println(token.String())
+	}
 }
 
-func (lox Lox) Error(line int, message string) {
-	lox.report(line, "", message)
+func (l Lox) Error(line int, message string) {
+	l.report(line, "", message)
 }
 
-func (lox *Lox) report(line int, where string, message string) {
+func (l *Lox) report(line int, where string, message string) {
 	fmt.Println("[line " + string(line) + "] Error" + where + ": " + message)
-	lox.hadError = true
+	l.hadError = true
 }
 
 func main() {

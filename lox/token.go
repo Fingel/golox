@@ -8,5 +8,5 @@ type Token struct {
 }
 
 func (token Token) String() string {
-	return string(token.TypeOf) + " " + string(token.Lexeme)
+	return "TOKEN> typeOf: " + token.TypeOf.String() + " lexeme: " + token.Lexeme
 }
