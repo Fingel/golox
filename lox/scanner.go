@@ -11,6 +11,17 @@ type Scanner struct {
 	start   int
 	current int
 	line    int
+	errors  []ScanError
+}
+
+type ScanError struct {
+	Message 	string
+	Line 		int
+	Where 		string
+}
+
+func (e *ScanError) Error() string {
+	return fmt.Sprintf("Scan error line %d at %s: %s", e.Line, e.Where, e.Message)
 }
 
 var keywords = map[string]TokenType{
@@ -38,14 +49,14 @@ func NewScanner(source string) Scanner {
 	return scanner
 }
 
-func (s *Scanner) ScanTokens() []Token {
+func (s *Scanner) ScanTokens() ([]Token, []ScanError) {
 	for !s.isAtEnd() {
 		s.start = s.current
 		s.scanToken()
 	}
 	s.tokens = append(s.tokens, Token{TypeOf: EOF, Lexeme: "", Literal: nil, Line: s.line})
 
-	return s.tokens
+	return s.tokens, s.errors
 }
 
 func (s *Scanner) scanToken() {
@@ -136,9 +147,8 @@ func (s *Scanner) scanToken() {
 		} else if s.isAlpha(c) {
 			s.identifier()
 		} else {
-			// lox.Lox.Error(s.line, "Unexpected character.")
-			fmt.Println("Todo figure out error reporting here")
-			panic("Unexpected character")
+			fmt.Println("Appending new error")
+			s.errors = append(s.errors, ScanError{"Unexpected character", s.line, string(c)})
 		}
 	}
 }
@@ -170,7 +180,8 @@ func (s *Scanner) number() {
 
 	value, err := strconv.ParseFloat(s.Source[s.start:s.current], 64)
 	if err != nil {
-		panic("Malformed number")
+		s.errors = append(s.errors, ScanError{"Malformed number", s.line, s.Source[s.start:s.current]})
+		return
 	}
 	s.addToken(NUMBER, value)
 }
@@ -184,7 +195,8 @@ func (s *Scanner) getString() {
 	}
 
 	if s.isAtEnd() {
-		panic("Unterminated string at line " + string(s.line))
+		s.errors = append(s.errors, ScanError{"Unterminated line", s.line, ""})
+		return
 	}
 
 	s.advance()
