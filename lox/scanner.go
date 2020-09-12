@@ -125,6 +125,14 @@ func (s *Scanner) scanToken() {
 			for s.peek() != '\n' && !s.isAtEnd() {
 				s.advance()
 			}
+		} else if s.match('*') {
+			// Block comments go until they find the next */ regardless of newlines
+			for s.peek() != '*' && s.peekNext() != '/' && !s.isAtEnd(){
+				s.advance()
+			}
+			// Advance past the */
+			s.advance()
+			s.advance()
 		} else {
 			s.addToken(SLASH, nil)
 		}
@@ -242,6 +250,19 @@ func (s Scanner) peekNext() byte {
 		return '\x00'
 	}
 	return s.Source[s.current+1]
+}
+
+func (s Scanner) lookBack() byte {
+	if s.current < 1 {
+		return '\x00'
+	}
+	return s.Source[s.current-1]
+}
+func (s Scanner) lookBackPrev() byte {
+	if s.current < 2 {
+		return '\x00'
+	}
+	return s.Source[s.current-2]
 }
 
 func (s Scanner) isAlpha(c byte) bool {
